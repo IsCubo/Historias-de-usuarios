@@ -5,13 +5,13 @@ import java.time.LocalDate;
 public class Event {
     private Long id;
     private String name;
-    private String date;
+    private LocalDate date;
     private int capacity;
     private String category;
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
-    public Event(Long id, String name, String date, int capacity, String category, LocalDate createdAt, LocalDate updatedAt) {
+    public Event(Long id, String name, LocalDate date, int capacity, String category, LocalDate createdAt, LocalDate updatedAt) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -40,11 +40,11 @@ public class Event {
         this.name = name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

@@ -49,7 +49,7 @@ public class EventRepository implements IRepository<Event, Long> {
     @Override
     public Optional<Event> update(Long id, Event event)
     {
-        return findById(event.getId())
+        return findById(id)
                 .map(existing -> {
             existing.setName(event.getName());
             existing.setDate(event.getDate());
