@@ -1,87 +1,92 @@
 package com.riwi.eventsvenues.service.impl;
 
-import com.riwi.eventsvenues.dto.VenueDTO;
+import com.riwi.eventsvenues.dto.VenueRequest;
+import com.riwi.eventsvenues.dto.VenueResponse;
+import com.riwi.eventsvenues.entity.VenueEntity;
+import com.riwi.eventsvenues.exception.DuplicateNameException;
 import com.riwi.eventsvenues.exception.NotFoundException;
-import com.riwi.eventsvenues.model.Venue;
-import com.riwi.eventsvenues.repository.IRepository;
-import com.riwi.eventsvenues.service.IService;
+import com.riwi.eventsvenues.mapper.VenueMapper;
+import com.riwi.eventsvenues.repository.VenueRepository;
+import com.riwi.eventsvenues.service.IVenueService;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class VenueService implements IService<VenueDTO, Long> {
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class VenueService implements IVenueService 
+{
 
-    private final IRepository<Venue, Long> repository;
+    private final VenueRepository repository;
+    private final VenueMapper mapper;
 
-    public VenueService(IRepository<Venue, Long> repository) {
-        this.repository = repository;
-    }
-
-    public Venue toEntity(VenueDTO dto)
-    {
-        Venue e = new Venue();
-        e.setId(dto.getId());
-        e.setName(dto.getName());
-        e.setLocation(dto.getLocation());
-        return e;
-    }
-
-    public VenueDTO toDTO(Venue e)
-    {
-        VenueDTO dto = new VenueDTO();
-        dto.setId(e.getId());
-        dto.setName(e.getName());
-        dto.setLocation(e.getLocation());
-        return dto;
-    }
-
-    //@Transactional
     @Override
-    public VenueDTO create(VenueDTO dto)
+    @Transactional
+    public VenueResponse create(VenueRequest request) 
     {
-        Venue save = repository.save(toEntity(dto));
-        return toDTO(save);
+        if(repository.findByName(request.name()) != null)
+        {
+            throw new DuplicateNameException("Venue name already exists");
+        }
+
+        VenueEntity entity = mapper.toEntity(request);
+        return mapper.toResponse(repository.save(entity));      
     }
 
-    //@Transactional(readOnly = true)
     @Override
-    public List<VenueDTO> findAll()
+    public List<VenueResponse> findAll() 
     {
         return repository.findAll().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
     }
 
-    //@Transactional(readOnly = true)
     @Override
-    public VenueDTO findById(Long id)
+    public VenueResponse findById(Long id) 
     {
-        return repository.findById(id).map(this::toDTO)
-                .orElseThrow(() -> new  NotFoundException("Event with id: " + id));
+        return repository.findById(id).stream()
+            .map(mapper::toResponse)
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Venue not found"));
     }
 
-    //@Transactional
     @Override
-    public VenueDTO update(Long id, VenueDTO dto)
+    @Transactional
+    public VenueResponse update(Long id, VenueRequest request) 
     {
-        return repository.findById(id).map(venue -> {
-            venue.setName(dto.getName());
-            venue.setLocation(dto.getLocation());
-            Venue updatedVenue = repository.update(id, venue)
-                    .orElseThrow(() -> new NotFoundException("venue with id: " + id));
-            return toDTO(updatedVenue);
-        }).orElseThrow(() -> new NotFoundException("venue with id: " + id));
+        VenueEntity entity = repository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Venue not found"));
+
+        if(repository.findByName(request.name()) != null)
+        {
+            throw new DuplicateNameException("Venue name already exists");
+        }
+        entity.setName(request.name());
+        entity.setLocation(request.location());
+        return mapper.toResponse(repository.save(entity));
     }
 
-    //@Transactional
     @Override
-    public void delete(Long id)
+    @Transactional
+    public void delete(Long id) 
     {
         repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Venue with id: " + id));
-        repository.delete(id);
+            .orElseThrow(() -> new NotFoundException("Venue not found"));
+        repository.deleteById(id);
+    }
+
+    @Override
+    public VenueResponse getVenueWithEvents(Long id) 
+    {
+        return repository.findByIdWithEvents(id).stream()
+            .map(mapper::toResponse)
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Venue not found"));
     }
 
 }

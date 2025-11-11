@@ -1,6 +1,7 @@
 package com.riwi.eventsvenues.controller;
 
-import com.riwi.eventsvenues.dto.VenueDTO;
+import com.riwi.eventsvenues.dto.VenueRequest;
+import com.riwi.eventsvenues.dto.VenueResponse;
 import com.riwi.eventsvenues.service.impl.VenueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,8 +30,8 @@ public class VenueController {
             description = "Get a list of all available venues")
     @ApiResponse(responseCode = "200", description = "List of venues successfully retrieved")
     @GetMapping
-    public ResponseEntity<List<VenueDTO>> findAll() {
-        List<VenueDTO> venues = venueService.findAll();
+    public ResponseEntity<List<VenueResponse>> findAll() {
+        List<VenueResponse> venues = venueService.findAll();
         return ResponseEntity.ok().body(venues);
     }
 
@@ -39,10 +40,10 @@ public class VenueController {
     @ApiResponse(responseCode = "200", description = "Venue found")
     @ApiResponse(responseCode = "404", description = "Venue not found")
     @GetMapping("/{id}")
-    public ResponseEntity<VenueDTO> findById(
+    public ResponseEntity<VenueResponse> findById(
             @Parameter(description = "ID of the venue to search for")
             @PathVariable Long id) {
-        VenueDTO venue = venueService.findById(id);
+        VenueResponse venue = venueService.findById(id);
         return ResponseEntity.ok().body(venue);
     }
 
@@ -51,10 +52,10 @@ public class VenueController {
     @ApiResponse(responseCode = "201", description = "Venue created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid venue data")
     @PostMapping
-    public ResponseEntity<VenueDTO> save(
+    public ResponseEntity<VenueResponse> save(
             @Parameter(description = "Data of the venue to create")
-            @Valid @RequestBody VenueDTO venueDTO) {
-        VenueDTO savedVenue = venueService.create(venueDTO);
+            @Valid @RequestBody VenueRequest request) {
+        VenueResponse savedVenue = venueService.create(request);
         return ResponseEntity.status(201).body(savedVenue);
     }
 
@@ -63,12 +64,12 @@ public class VenueController {
     @ApiResponse(responseCode = "200", description = "Venue updated successfully")
     @ApiResponse(responseCode = "404", description = "Venue not found")
     @PutMapping("/{id}")
-    public ResponseEntity<VenueDTO> update(
+    public ResponseEntity<VenueResponse> update(
             @Parameter(description = "ID of the venue to update")
             @PathVariable Long id,
             @Parameter(description = "New data for the venue")
-            @Valid @RequestBody VenueDTO venueDTO) {
-        VenueDTO updatedVenue = venueService.update(id, venueDTO);
+            @Valid @RequestBody VenueRequest request) {
+        VenueResponse updatedVenue = venueService.update(id, request);
         return ResponseEntity.ok().body(updatedVenue);
     }
 
@@ -82,5 +83,17 @@ public class VenueController {
             @PathVariable Long id) {
         venueService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Get venue with events",
+            description = "Get a specific venue by its ID with its events")
+    @ApiResponse(responseCode = "200", description = "Venue found")
+    @ApiResponse(responseCode = "404", description = "Venue not found")
+    @GetMapping("/{id}/events")
+    public ResponseEntity<VenueResponse> getVenueWithEvents(
+            @Parameter(description = "ID of the venue to search for")
+            @PathVariable Long id) {
+        VenueResponse venue = venueService.getVenueWithEvents(id);
+        return ResponseEntity.ok().body(venue);
     }
 }

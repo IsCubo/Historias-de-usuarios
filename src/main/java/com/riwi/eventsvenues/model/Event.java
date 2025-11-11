@@ -6,17 +6,19 @@ public class Event {
     private Long id;
     private String name;
     private LocalDate date;
-    private int capacity;
+    private Integer capacity;
     private String category;
+    private Venue venue;
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
-    public Event(Long id, String name, LocalDate date, int capacity, String category, LocalDate createdAt, LocalDate updatedAt) {
+    public Event(Long id, String name, LocalDate date, Integer capacity, String category, Venue venue, LocalDate createdAt, LocalDate updatedAt) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.capacity = capacity;
         this.category = category;
+        this.venue = venue;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -48,11 +50,11 @@ public class Event {
         this.date = date;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
 
@@ -62,6 +64,14 @@ public class Event {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Venue getVenue() {
+        return venue;
+    }
+
+    public void setVenue(Venue venue) {
+        this.venue = venue;
     }
 
     public LocalDate getCreatedAt() {

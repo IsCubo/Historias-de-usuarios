@@ -28,6 +28,19 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler(DuplicateNameException.class)
+    public ProblemDetail handleDuplicateName(DuplicateNameException ex, HttpServletRequest req)
+    {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        pd.setType(URI.create("/errors/duplicate-name"));
+        pd.setTitle("Nombre duplicado");
+        pd.setDetail(ex.getMessage());
+        pd.setProperty("code", ex.getErrorCode());
+        pd.setProperty("traceId", Trace.currentId());
+        pd.setProperty("instance", req.getRequestURI());
+        return pd;
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleBusiness(BusinessException ex, HttpServletRequest req)
     {

@@ -1,91 +1,102 @@
 package com.riwi.eventsvenues.service.impl;
 
-import com.riwi.eventsvenues.dto.EventDTO;
+import com.riwi.eventsvenues.dto.EventRequest;
+import com.riwi.eventsvenues.dto.EventResponse;
+import com.riwi.eventsvenues.entity.EventEntity;
+import com.riwi.eventsvenues.entity.VenueEntity;
+import com.riwi.eventsvenues.exception.DuplicateNameException;
 import com.riwi.eventsvenues.exception.NotFoundException;
-import com.riwi.eventsvenues.model.Event;
-import com.riwi.eventsvenues.repository.IRepository;
-import com.riwi.eventsvenues.service.IService;
+import com.riwi.eventsvenues.mapper.EventMapper;
+import com.riwi.eventsvenues.repository.EventRepository;
+import com.riwi.eventsvenues.repository.VenueRepository;
+import com.riwi.eventsvenues.service.IEventService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class EventService implements IService<EventDTO, Long> {
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class EventService implements IEventService {
 
-    private final IRepository<Event, Long> repository;
+    private final EventRepository eventRepository;
+    private final VenueRepository venueRepository;
+    private final EventMapper mapper;
 
-    public EventService(IRepository<Event, Long> repository) {
-        this.repository = repository;
-    }
 
-    public Event toEntity(EventDTO dto)
-    {
-        Event e = new Event();
-        e.setId(dto.getId());
-        e.setName(dto.getName());
-        e.setDate(dto.getDate());
-        e.setCapacity(dto.getCapacity());
-        e.setCategory(dto.getCategory());
-        return e;
-    }
-
-    public EventDTO toDTO(Event e)
-    {
-        EventDTO dto = new EventDTO();
-        dto.setId(e.getId());
-        dto.setName(e.getName());
-        dto.setDate(e.getDate());
-        dto.setCapacity(e.getCapacity());
-        dto.setCategory(e.getCategory());
-        return dto;
-    }
-
-    //@Transactional
+    @Transactional
     @Override
-    public EventDTO create(EventDTO dto)
+    public EventResponse create(EventRequest request) 
     {
-        Event save = repository.save(toEntity(dto));
-        return toDTO(save);
+        VenueEntity venue = venueRepository.findById(request.venueId())
+                .orElseThrow(() -> new NotFoundException("Venue not found with id: " + request.venueId()));
+
+        if(eventRepository.findByName(request.name()) != null)
+        {
+            throw new DuplicateNameException("Event name already exists");
+        }
+
+        EventEntity event = mapper.toEntity(request);
+        event.setVenue(venue);
+
+        EventEntity saved = eventRepository.save(event);
+        return mapper.toResponse(saved);
     }
 
-    //@Transactional(readOnly = true)
     @Override
-    public List<EventDTO> findAll()
+    public List<EventResponse> findAll()
     {
-        return repository.findAll().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return eventRepository.findAllWithVenue()
+            .stream()
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
     }
 
-    //@Transactional(readOnly = true)
     @Override
-    public EventDTO findById(Long id)
+    public EventResponse findById(Long id)
     {
-        return repository.findById(id).map(this::toDTO)
-                .orElseThrow(() -> new NotFoundException("Event with id: " + id));
+        EventEntity event = eventRepository.findByIdWithVenue(id)
+                .orElseThrow(() -> new NotFoundException("Event not found with id: " + id));
+        return mapper.toResponse(event);
     }
 
-    //@Transactional
     @Override
-    public EventDTO update(Long id, EventDTO dto)
+    @Transactional
+    public EventResponse update(Long id, EventRequest request) 
     {
-        return repository.findById(id).map(event -> {
-            event.setName(dto.getName());
-            event.setDate(dto.getDate());
-            event.setCapacity(dto.getCapacity());
-            event.setCategory(dto.getCategory());
-            Event updated = repository.update(id, event)
-                    .orElseThrow(() -> new NotFoundException("Event with id: " + id));
-            return toDTO(updated);
-        }).orElseThrow(() -> new NotFoundException("Event with id: " + id));
+        EventEntity entity = eventRepository.findByIdWithVenue(id)
+            .orElseThrow(() -> new NotFoundException("Event not found with id: " + id));
+        
+        if(eventRepository.findByName(request.name()) != null)
+        {
+            throw new DuplicateNameException("Event name already exists");
+        }
+
+        if (!entity.getVenue().getId().equals(request.venueId())) {
+            VenueEntity newVenue = venueRepository.findById(request.venueId())
+                    .orElseThrow(() -> new NotFoundException("Venue not found with id: " + request.venueId()));
+            entity.setVenue(newVenue);
+        }
+
+        entity.setName(request.name());
+        entity.setCapacity(request.capacity());
+        entity.setDate(request.date());
+        entity.setCategory(request.category());
+        return mapper.toResponse(eventRepository.save(entity));
     }
 
-    //@Transactional
     @Override
-    public void delete(Long id) {
-        repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Event with id: " + id));
-        repository.delete(id);
+    @Transactional
+    public void delete(Long id) 
+    {
+        eventRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Event not found with id: " + id));
+        eventRepository.deleteById(id);
     }
+
 }

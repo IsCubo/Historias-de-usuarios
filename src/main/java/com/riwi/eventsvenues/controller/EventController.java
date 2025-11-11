@@ -1,6 +1,7 @@
 package com.riwi.eventsvenues.controller;
 
-import com.riwi.eventsvenues.dto.EventDTO;
+import com.riwi.eventsvenues.dto.EventRequest;
+import com.riwi.eventsvenues.dto.EventResponse;
 import com.riwi.eventsvenues.service.impl.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,8 +30,8 @@ public class EventController {
             description = "Get a list of all available events")
     @ApiResponse(responseCode = "200", description = "List of events successfully retrieved")
     @GetMapping
-    public ResponseEntity<List<EventDTO>> findAll() {
-        List<EventDTO> events = eventService.findAll();
+    public ResponseEntity<List<EventResponse>> findAll() {
+        List<EventResponse> events = eventService.findAll();
         return ResponseEntity.ok().body(events);
     }
 
@@ -39,10 +40,10 @@ public class EventController {
     @ApiResponse(responseCode = "200", description = "Event found")
     @ApiResponse(responseCode = "404", description = "Event not found")
     @GetMapping("/{id}")
-    public ResponseEntity<EventDTO> findById(
+    public ResponseEntity<EventResponse> findById(
             @Parameter(description = "ID of the event to search for")
             @Valid @PathVariable Long id) {
-        EventDTO event = eventService.findById(id);
+        EventResponse event = eventService.findById(id);
         return ResponseEntity.ok().body(event);
     }
 
@@ -51,10 +52,10 @@ public class EventController {
     @ApiResponse(responseCode = "201", description = "Event created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid event data")
     @PostMapping
-    public ResponseEntity<EventDTO> save(
+    public ResponseEntity<EventResponse> save(
             @Parameter(description = "Data of the event to create")
-            @Valid @RequestBody EventDTO eventDTO) {
-        EventDTO savedEvent = eventService.create(eventDTO);
+            @Valid @RequestBody EventRequest request) {
+        EventResponse savedEvent = eventService.create(request);
         return ResponseEntity.status(201).body(savedEvent);
     }
 
@@ -63,12 +64,12 @@ public class EventController {
     @ApiResponse(responseCode = "200", description = "Event updated successfully")
     @ApiResponse(responseCode = "404", description = "Event not found")
     @PutMapping("/{id}")
-    public ResponseEntity<EventDTO> update(
+    public ResponseEntity<EventResponse> update(
             @Parameter(description = "ID of the event to update")
             @Valid @PathVariable Long id,
             @Parameter(description = "New data for the event")
-            @Valid @RequestBody EventDTO eventDTO) {
-        EventDTO updatedEvent = eventService.update(id, eventDTO);
+            @Valid @RequestBody EventRequest request) {
+        EventResponse updatedEvent = eventService.update(id, request);
         return ResponseEntity.ok().body(updatedEvent);
     }
 

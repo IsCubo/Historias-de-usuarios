@@ -7,7 +7,8 @@ public enum ErrorCode {
     NOT_FOUND(404, "Resource not found", Severity.ERROR),
     INVALID_REQUEST(400, "Invalid request", Severity.ERROR),
     INTERNAL_SERVER_ERROR(500, "Internal server error", Severity.ERROR),
-    UNAUTHORIZED(401, "Unauthorized access", Severity.ERROR);
+    UNAUTHORIZED(401, "Unauthorized access", Severity.ERROR),
+    DUPLICATE_NAME(409, "Duplicate name", Severity.ERROR);
 
     private final int code;
     private final String message;
