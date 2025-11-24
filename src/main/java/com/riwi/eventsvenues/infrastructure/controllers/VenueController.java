@@ -1,7 +1,7 @@
 package com.riwi.eventsvenues.infrastructure.controllers;
 
-import com.riwi.eventsvenues.application.usecases.venue.*;
 import com.riwi.eventsvenues.domain.model.Venue;
+import com.riwi.eventsvenues.domain.ports.in.venue.*;
 import com.riwi.eventsvenues.infrastructure.dto.VenueRequest;
 import com.riwi.eventsvenues.infrastructure.dto.VenueResponse;
 import com.riwi.eventsvenues.infrastructure.mapper.VenueWebMapper;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VenueController {
 
-    private final CreateVenueUseCaseImpl createUseCase;
-    private final FindVenueByIdUseCaseImpl findByIdUseCase;
-    private final FindAllVenuesUseCaseImpl findAllUseCase;
-    private final UpdateVenueUseCaseImpl updateUseCase;
-    private final DeleteVenueUseCaseImpl deleteUseCase;
+    private final CreateVenueUseCase createUseCase;
+    private final FindVenueByIdUseCase findByIdUseCase;
+    private final FindAllVenuesUseCase findAllUseCase;
+    private final UpdateVenueUseCase updateUseCase;
+    private final DeleteVenueUseCase deleteUseCase;
     private final VenueWebMapper mapper;
 
     @PostMapping

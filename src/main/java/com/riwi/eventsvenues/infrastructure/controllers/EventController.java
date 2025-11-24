@@ -1,7 +1,7 @@
 package com.riwi.eventsvenues.infrastructure.controllers;
 
-import com.riwi.eventsvenues.application.usecases.event.*;
 import com.riwi.eventsvenues.domain.model.Event;
+import com.riwi.eventsvenues.domain.ports.in.event.*;
 import com.riwi.eventsvenues.infrastructure.dto.EventRequest;
 import com.riwi.eventsvenues.infrastructure.dto.EventResponse;
 import com.riwi.eventsvenues.infrastructure.mapper.EventWebMapper;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventController {
 
-    private final CreateEventUseCaseImpl createUseCase;
-    private final FindEventByIdUseCaseImpl findByIdUseCase;
-    private final FindAllEventsUseCaseImpl findAllUseCase;
-    private final UpdateEventUseCaseImpl updateUseCase;
-    private final DeleteEventUseCaseImpl deleteUseCase;
+    private final CreateEventUseCase createUseCase;
+    private final FindEventByIdUseCase findByIdUseCase;
+    private final FindAllEventsUseCase findAllUseCase;
+    private final UpdateEventUseCase updateUseCase;
+    private final DeleteEventUseCase deleteUseCase;
     private final EventWebMapper mapper;
 
     @PostMapping
