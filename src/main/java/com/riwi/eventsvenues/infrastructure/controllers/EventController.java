@@ -2,17 +2,21 @@ package com.riwi.eventsvenues.infrastructure.controllers;
 
 import com.riwi.eventsvenues.domain.model.Event;
 import com.riwi.eventsvenues.domain.ports.in.event.*;
+import com.riwi.eventsvenues.infrastructure.adapters.EventRepositoryAdapter;
 import com.riwi.eventsvenues.infrastructure.dto.EventRequest;
 import com.riwi.eventsvenues.infrastructure.dto.EventResponse;
 import com.riwi.eventsvenues.infrastructure.mapper.EventWebMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,7 @@ public class EventController {
     private final UpdateEventUseCase updateUseCase;
     private final DeleteEventUseCase deleteUseCase;
     private final EventWebMapper mapper;
+    private final EventRepositoryAdapter eventRepository;
 
     @PostMapping
     @Operation(summary = "Crear un nuevo evento")
@@ -58,6 +63,20 @@ public class EventController {
         Event domain = mapper.toDomain(request);
         Event updated = updateUseCase.updateEvent(id, domain);
         return ResponseEntity.ok(mapper.toResponse(updated));
+    }
+
+    // Agregar al EventController.java
+    @GetMapping("/search")
+    @Operation(summary = "Buscar eventos con filtros")
+    public ResponseEntity<List<EventResponse>> searchEvents(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        
+        List<Event> events = eventRepository.findByFilters(category, startDate, endDate);
+        return ResponseEntity.ok(events.stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList()));
     }
 
     @DeleteMapping("/{id}")

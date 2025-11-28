@@ -6,10 +6,14 @@ import com.riwi.eventsvenues.infrastructure.entities.EventEntity;
 import com.riwi.eventsvenues.infrastructure.exception.NotFoundException;
 import com.riwi.eventsvenues.infrastructure.mapper.EventPersistenceMapper;
 import com.riwi.eventsvenues.infrastructure.repositories.EventJpaRepository;
+import com.riwi.eventsvenues.infrastructure.specifications.EventSpecifications;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +48,18 @@ public class EventRepositoryAdapter implements EventRepositoryPort {
     @Override
     public List<Event> findAll() {
         return repo.findAll().stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    public List<Event> findByFilters(String category, LocalDateTime startDate, LocalDateTime endDate) {
+        Specification<EventEntity> spec = Specification.where(EventSpecifications.hasCategory(category))
+                .and(EventSpecifications.dateAfter(startDate))
+                .and(EventSpecifications.dateBefore(endDate));
+                
+        return repo.findAll(spec).stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
