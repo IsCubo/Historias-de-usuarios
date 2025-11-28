@@ -1,8 +1,8 @@
-# Events & Venues - In-Memory Catalog (REST + Layered Architecture)
+# Events & Venues - In-Memory Catalog (REST + hexagonal architecture)
 
 ## Overview
 
-This project implements a simple in-memory catalogue for an online ticketing platform. It exposes a REST API to manage Events and Venues using a layered architecture (Controller → Service → Repository). The implementation uses temporary in-memory storage (CopyOnWriteArrayList) and documents the API with OpenAPI/Swagger.
+This project implements a simple in-memory catalogue for an online ticketing platform. It exposes a REST API to manage Events and Venues using a hexagonal architecture (Controller → Service → Repository). The implementation uses temporary in-memory storage (CopyOnWriteArrayList) and documents the API with OpenAPI/Swagger.
 
 This README contains:
 - High-level architecture and project structure

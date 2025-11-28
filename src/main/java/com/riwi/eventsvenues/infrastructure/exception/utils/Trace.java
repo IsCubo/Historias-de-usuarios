@@ -1,4 +1,4 @@
-package com.riwi.eventsvenues.exception.utils;
+package com.riwi.eventsvenues.infrastructure.exception.utils;
 
 import java.util.Optional;
 import java.util.UUID;

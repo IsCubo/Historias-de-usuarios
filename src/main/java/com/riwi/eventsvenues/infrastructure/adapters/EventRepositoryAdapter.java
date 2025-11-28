@@ -3,9 +3,10 @@ package com.riwi.eventsvenues.infrastructure.adapters;
 import com.riwi.eventsvenues.domain.model.Event;
 import com.riwi.eventsvenues.domain.ports.out.EventRepositoryPort;
 import com.riwi.eventsvenues.infrastructure.entities.EventEntity;
+import com.riwi.eventsvenues.infrastructure.exception.NotFoundException;
 import com.riwi.eventsvenues.infrastructure.mapper.EventPersistenceMapper;
 import com.riwi.eventsvenues.infrastructure.repositories.EventJpaRepository;
-import com.riwi.eventsvenues.exception.NotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

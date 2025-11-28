@@ -1,9 +1,5 @@
 package com.riwi.eventsvenues.infrastructure.controllers;
 
-import com.riwi.eventsvenues.exception.BusinessException;
-import com.riwi.eventsvenues.exception.DuplicateNameException;
-import com.riwi.eventsvenues.exception.NotFoundException;
-import com.riwi.eventsvenues.exception.utils.Trace;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -11,6 +7,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.riwi.eventsvenues.infrastructure.exception.BusinessException;
+import com.riwi.eventsvenues.infrastructure.exception.DuplicateNameException;
+import com.riwi.eventsvenues.infrastructure.exception.NotFoundException;
+import com.riwi.eventsvenues.infrastructure.exception.utils.Trace;
 
 import java.net.URI;
 import java.util.List;

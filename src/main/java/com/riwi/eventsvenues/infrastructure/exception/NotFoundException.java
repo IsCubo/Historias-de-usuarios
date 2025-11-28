@@ -1,4 +1,4 @@
-package com.riwi.eventsvenues.exception;
+package com.riwi.eventsvenues.infrastructure.exception;
 
 public class NotFoundException extends BusinessException {
 
